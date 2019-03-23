@@ -5,25 +5,16 @@ var gulpIf = require('gulp-if');
 var uglify = require('gulp-uglify');
 var useref = require('gulp-useref');
 var imagemin = require('gulp-imagemin');
-var gutil = require('gulp-util');
 var $ = require('gulp-load-plugins')();
 var browserify = require('browserify');
 var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var del = require('del');
-var runSequence = require('run-sequence');
-
-var dependencies = [
-	'react',
-  	'react-dom'
-];
+var log = require('fancy-log');
 
 
-gulp.task('hello', function(){
-    console.log('Hello Sagar!');
-});
 
-gulp.task('sass',function(){    
+gulp.task('sass',function(){
     return gulp.src('app/styles/**/*.scss')
     .pipe(sass({})
     .on('error', sass.logError))
@@ -31,7 +22,7 @@ gulp.task('sass',function(){
     .pipe(gulp.dest('dist/styles/'))    
 });
 
-gulp.task('html', function() {    
+gulp.task('html', function() {
     return gulp.src('app/*.html')
         .pipe(useref())
         .pipe(gulpIf('*.js',uglify()))
@@ -52,23 +43,24 @@ gulp.task('sync',function(){
     })
 });
 
-gulp.task('bundlejs',function(){
-    return bundleApp(false);
+gulp.task('bundlejs',function(done){
+  bundleApp(false);
+  done();
 });
 
-function bundleApp(isProduction) {	
+function bundleApp(isProduction) {
 	var appBundler = browserify({
     	entries: ['./app/scripts/app.js'],
         insertGlobals: true,
         cache: {},
         packageCache: {},
     	debug: true
-  	})  		
-  	appBundler
+  	});
+  return appBundler
   		// transform ES6 and JSX to ES5 with babelify
-	  	.transform("babelify", {presets: ["es2015", "react"]})        
+	  	.transform("babelify")
 	    .bundle()
-	    .on('error',gutil.log)
+	    .on('error', function(error) { log(error); })
 	    .pipe(source('./app.js'))
 	    .pipe(gulp.dest('./dist/scripts/'));
 }
@@ -85,7 +77,7 @@ var bundler = {
     },
     bundle: function() {
         return this.w && this.w.bundle()
-            .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+            .on('error', function(error) { log(error); })
             .pipe(source('app.js'))
             .pipe(gulp.dest('dist/scripts'));
     },
@@ -102,30 +94,29 @@ gulp.task('scripts', function() {
     return bundler.bundle();
 });
 
-gulp.task('clean:dist', function() {
-  return del.sync('dist');
-})
-
-
-gulp.task('build', function (callback) {
-  runSequence('clean:dist', 'bundlejs','sass','image', 'html', 'sync' ,callback
-  );
-gulp.watch('app/scripts/**/*.js', ['bundlejs']);
-})
-
-gulp.task('watch',['sync','sass','image','html','bundlejs'],function(){    
-    gulp.watch('app/scripts/**/*.js', ['bundlejs']);
-    gulp.watch('app/styles/**/*.scss',['sass']);  
-    gulp.watch('app/*.html',['html']);
+gulp.task('clean:dist', function(done) {
+  del.sync('dist');
+  done();
 });
 
 
+gulp.task('build', gulp.series('clean:dist', 'bundlejs','sass','image', 'html', 'sync'));
+  //gulp.watch('app/scripts/**/*.js', gulp.series('bundlejs'));
+//});
+
+gulp.task('watch',gulp.series('sync','sass','image','html','bundlejs', function(){
+    gulp.watch('app/scripts/**/*.js', gulp.series('bundlejs'));
+    gulp.watch('app/styles/**/*.scss', gulp.series('sass'));
+    gulp.watch('app/*.html', gulp.series('html'));
+}));
+
+
 //*******************   Typeahead demo  ************************/
-gulp.task('type',function(){        
-        browserify('./app/scripts/typeahead-demo.js')
-	  	.transform("babelify", {presets: ["es2015", "react"]})
+gulp.task('type',function(){
+  browserify('./app/scripts/typeahead-demo.js')
+	  	.transform("babelify")
 	    .bundle()
-	    .on('error',gutil.log)
+	    .on('error', function (error) { log(error); })
         .pipe(source('./app/scripts/typeahead-demo.js'))
 	    .pipe(gulp.dest('./dist/scripts/'));	    
 });
