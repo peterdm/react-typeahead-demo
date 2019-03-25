@@ -56,3 +56,8 @@ __You can install and try this application on your machine.__
 
 
 
+## Peter's ideas for reducing dependencies
+
+1.  Use corejavascript/typeahead.js fork (maintained)
+2.  Look at PR 163 which removes jquery dep from Bloodhound: https://github.com/corejavascript/typeahead.js/pull/163
+3.  Consider if it might be possible to use standalone Bloodhound
