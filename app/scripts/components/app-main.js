@@ -54,7 +54,9 @@ class App extends Component {
               score: hit._score
             };
           });
-        } // end filter
+        }, // end filter
+        rateLimitBy: "throttle",
+        rateLimitWait: 200
       }
     }); // end new Bloodhound
 
@@ -67,11 +69,29 @@ class App extends Component {
       hint: true,
       highlight: true,
       minLength: 2,
+      limit: 6
     }, 
     {
       displayKey : function(datum) { return datum.value;},
       name : 'popularQueries',
-      source: popularQueries.ttAdapter()
+      source: popularQueries.ttAdapter(),
+      templates: {
+        empty: [
+          '<div class="empty-message">',
+          'Do something personalized with this space',
+          '</div>'
+        ].join('\n'),
+        footer: function (data) {
+          return ['<div class="tt-footer">',
+            '<a>',
+            'See all results for "',
+            data.query,
+            '"',
+            '</a>',
+            '</div>'
+          ].join('');
+        }
+      }
     }).
     on('typeahead:cursorchanged', function(obj, datum) {
       this.showSuggestionStats(datum.source)

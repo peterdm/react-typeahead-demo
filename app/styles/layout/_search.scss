@@ -26,11 +26,19 @@
     .typeahead {
       width: 100%; // full width input search
       background: none;
-      border-bottom: solid 1px white;
+      border-bottom: solid 1px #ccc;
+      font-family: Linotype Univers W01, Arial Narrow, Arial, Helvetica, sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 100;
+      font-style: normal;
+      font-size: 20px;
 
       .form-control {
-        animation: fadein ease-in 0.5s;
+        //animation: fadein ease-in 0.5s;
         border: none;
+        box-shadow: none;
       }
 
       .searchbox__input {
@@ -53,8 +61,8 @@
   margin-top: 2px;
   padding: 5px 0;
   //background: rgba(0, 0, 0, 0.85);
-  border-radius: 4px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  //border-radius: 4px;
+  //box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
   //color: $lightGrey;
 }
@@ -62,21 +70,48 @@
 
 //Since app is displaying .tt-menu instead of .tt-dropdown-menu, copying above code
 .tt-menu {
-  animation: fadein ease-out 0.5s;
+  //animation: fadein ease-out 0.5s;
   min-width: 100%;
-  margin-top: 2px;
+  //margin-top: 2px;
   padding: 5px 0;
   //background: rgba(0, 0, 0, 0.85);
-  border-radius: 4px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  //border-radius: 4px;
+  //box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
-  //color: $lightGrey;
+  border: solid 1px #ccc;
 }
 
+
+// empty box
+.tt-empty {
+  display: block;
+  min-height: 100px;
+}
 
 
 // suggestions text
 .tt-suggestion {
+  padding: 3px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 24px;
+
+  p {
+    margin: 5px 0; // suggestion list spacing
+  }
+  // hover styles
+  &.tt-cursor,
+  &:hover {
+    color: #333;
+    background-color: #EEE;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.tt-footer {
   padding: 3px 20px;
   font-size: 18px;
   line-height: 24px;
@@ -94,6 +129,10 @@
   &:hover {
     cursor: pointer;
   }
+}
+
+.tt-highlight {
+  font-weight: normal;
 }
 
 // sm up
