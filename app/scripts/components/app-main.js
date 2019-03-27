@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import SearchBox from './search';
 import Card from './card';
+import he from 'he';
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      movieID: 424 // set initital load movie - Schindler's List
     }
   }
   render() {
@@ -48,7 +48,7 @@ class App extends Component {
         filter : function(popularQueries){
           return $.map(popularQueries.hits.hits, function(hit){
             return {
-              value: hit._id,
+              value: he.decode(hit.highlight.querie[0]),
               id: hit._id,
               source: hit._source,
               score: hit._score
@@ -67,8 +67,8 @@ class App extends Component {
     //----Configure Typeahead UI    
     $('.typeahead').typeahead({
       hint: true,
-      highlight: true,
-      minLength: 2,
+      highlight: false,
+      minLength: 0,
       limit: 6
     }, 
     {
@@ -81,6 +81,12 @@ class App extends Component {
           'Do something personalized with this space',
           '</div>'
         ].join('\n'),
+        suggestion: function (suggestion) {
+          return ['<div class="tt-suggestion tt-selectable">',
+            suggestion.value,
+            '</div>'
+          ].join('');
+        },
         footer: function (data) {
           return ['<div class="tt-footer">',
             '<a>',

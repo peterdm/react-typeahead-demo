@@ -82,12 +82,12 @@
 }
 
 
-// empty box
-.tt-empty {
-  display: block;
-  min-height: 100px;
+.empty-message {
+  padding: 3px 20px;
+  font-size: 18px;
+  line-height: 24px;
+  color: #ccc;
 }
-
 
 // suggestions text
 .tt-suggestion {
@@ -98,6 +98,10 @@
 
   p {
     margin: 5px 0; // suggestion list spacing
+  }
+  em {
+    font-weight: normal;
+    font-style: normal;
   }
   // hover styles
   &.tt-cursor,
@@ -131,9 +135,6 @@
   }
 }
 
-.tt-highlight {
-  font-weight: normal;
-}
 
 // sm up
 
