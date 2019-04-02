@@ -36,20 +36,30 @@ class App extends Component {
       remote: {
         url: 'http://localhost:9200/universal-search-query-suggest/_search/template',
         prepare: function (query, settings) {
+          let trailingspace = /\s+$/.test(query);
+          let frontterms = (trailingspace) ? query.trim() : query.trim().split(/\s+/).slice(0,-1).join(" ");
+          let [backterm] = (trailingspace) ? [] : query.trim().split(/\s+/).slice(-1);
+
+
+          let formattedRequest = {
+            params: { frontterms: frontterms, backterm: backterm },
+            id: "query_suggest_template"
+          };
+
           settings.type = "POST";
           settings.contentType = "application/json; charset=UTF-8";
-          settings.data = JSON.stringify({
-            params: {query},
-            id: "query_suggest_template"
-          });
+          settings.data = JSON.stringify(formattedRequest);
 
           return settings;
         },
         filter : function(popularQueries){
           return $.map(popularQueries.hits.hits, function(hit){
             return {
-              value: he.decode(hit.highlight.querie[0]),
+              value: ("highlight" in hit && "querie" in hit.highlight)
+                ? he.decode(hit.highlight.querie[0])
+                : hit._source.querie,
               id: hit._id,
+              query: hit._source.querie,
               source: hit._source,
               score: hit._score
             };
@@ -72,7 +82,7 @@ class App extends Component {
       limit: 6
     }, 
     {
-      displayKey : function(datum) { return datum.value;},
+      displayKey : function(datum) { return datum.query;},
       name : 'popularQueries',
       source: popularQueries.ttAdapter(),
       templates: {
@@ -88,10 +98,10 @@ class App extends Component {
           ].join('');
         },
         footer: function (data) {
-          return ['<div class="tt-footer">',
+          return ['<div class="tt-suggestion tt-selectable">',
             '<a>',
             'See all results for "',
-            data.query,
+            data.query.trim(),
             '"',
             '</a>',
             '</div>'
