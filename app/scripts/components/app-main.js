@@ -56,7 +56,7 @@ class App extends Component {
           return $.map(popularQueries.hits.hits, function(hit){
             return {
               value: ("highlight" in hit && "querie" in hit.highlight)
-                ? he.decode(hit.highlight.querie[0])
+                ? he.decode(hit.highlight["querie"][0])
                 : hit._source.querie,
               id: hit._id,
               query: hit._source.querie,
@@ -99,11 +99,9 @@ class App extends Component {
         },
         footer: function (data) {
           return ['<div class="tt-suggestion tt-selectable">',
-            '<a>',
             'See all results for "',
             data.query.trim(),
             '"',
-            '</a>',
             '</div>'
           ].join('');
         }
